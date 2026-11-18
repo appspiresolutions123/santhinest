@@ -79,12 +79,21 @@ class UploadImages extends Command
     }
 
     /**
-     * Record the file and add it to the gallery of the property named by its
-     * folder, unless that gallery already shows it. Photos an admin removed
-     * are not brought back once the gallery has other photos.
+     * Switch an existing public import to S3 or add the photo to the gallery
+     * of the property named by its source folder.
      */
     protected function recordPropertyImage(string $diskName, string $path, SplFileInfo $file): void
     {
+        if ($diskName === 's3' && ! Media::query()->where('disk', $diskName)->where('path', $path)->exists()) {
+            $localMedia = Media::query()->where('disk', 'public')->where('path', $path)->first();
+
+            if ($localMedia !== null) {
+                $localMedia->update(['disk' => $diskName]);
+
+                return;
+            }
+        }
+
         $caption = self::caption($file->getFilename());
 
         $media = Media::query()->updateOrCreate(
@@ -128,6 +137,6 @@ class UploadImages extends Command
      */
     public static function sourcePath(): string
     {
-        return resource_path('js/assets/images/properties');
+        return public_path('images/properties');
     }
 }
