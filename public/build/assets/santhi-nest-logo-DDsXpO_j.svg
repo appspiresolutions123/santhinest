@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" width="400" height="340" role="img" aria-labelledby="brand-title">
+    <title id="brand-title">shanthinest.com — Service Apartments</title>
+    <g fill="none" stroke="#2f7637" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M112 153 200 79 288 153"/>
+        <path d="M132 143v90h136v-90"/>
+        <path d="M183 233v-57h34v57"/>
+        <path d="M99 211a115 115 0 1 1 203-5" stroke-width="4"/>
+    </g>
+    <path d="M266 93c-8-32 7-57 42-69 9 33-5 60-42 69Z" fill="#2f7637"/>
+    <path d="m267 92 28-48" fill="none" stroke="#fbf7f1" stroke-width="3"/>
+    <text x="200" y="280" text-anchor="middle" fill="#195429" font-family="Georgia, serif" font-size="38" font-weight="700">shanthinest.com</text>
+    <text x="200" y="308" text-anchor="middle" fill="#367a38" font-family="Arial, sans-serif" font-size="18">Service Apartments</text>
+    <text x="200" y="332" text-anchor="middle" fill="#255c2d" font-family="Georgia, serif" font-size="18" font-style="italic">Stay peacefully</text>
+</svg>
