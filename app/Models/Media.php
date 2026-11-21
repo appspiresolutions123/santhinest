@@ -12,8 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 
 /**
  * @property int $id
@@ -51,7 +53,20 @@ class Media extends Model
     public static function storeUpload(UploadedFile $file, string $folder, ?string $disk = null, ?string $alt = null, string $errorKey = 'image'): self
     {
         $disk ??= (string) config('filesystems.images_disk');
-        $path = $file->store(UploadImages::PREFIX.'/'.trim($folder, '/'), $disk);
+        $directory = UploadImages::PREFIX.'/'.trim($folder, '/');
+        $mimeType = $file->getMimeType();
+        $originalSize = $file->getSize();
+        $optimized = $mimeType === 'image/jpeg' ? self::optimizeJpeg($file, $originalSize) : null;
+        $options = ['CacheControl' => 'private, max-age=604800'];
+
+        if ($optimized === null) {
+            $path = $file->store($directory, ['disk' => $disk, ...$options]);
+        } else {
+            $path = $directory.'/'.$file->hashName();
+            if (! Storage::disk($disk)->put($path, $optimized, ['ContentType' => $mimeType, ...$options])) {
+                $path = false;
+            }
+        }
 
         if ($path === false) {
             throw ValidationException::withMessages([$errorKey => __('The image could not be uploaded. Please try again.')]);
@@ -61,10 +76,30 @@ class Media extends Model
             'disk' => $disk,
             'path' => $path,
             'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
+            'mime_type' => $mimeType,
+            'size' => $optimized === null ? $originalSize : strlen($optimized),
             'alt' => $alt,
         ]);
+    }
+
+    /**
+     * Optimize JPEG coding while preserving image coefficients and metadata.
+     */
+    private static function optimizeJpeg(UploadedFile $file, int $originalSize): ?string
+    {
+        try {
+            $result = Process::timeout(3)->run(['jpegtran', '-copy', 'all', '-optimize', $file->getPathname()]);
+        } catch (RuntimeException) {
+            return null;
+        }
+
+        $image = $result->output();
+
+        if ($result->failed() || strlen($image) >= $originalSize || ! str_starts_with($image, "\xFF\xD8")) {
+            return null;
+        }
+
+        return $image;
     }
 
     /**
