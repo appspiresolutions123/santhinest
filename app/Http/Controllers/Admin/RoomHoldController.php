@@ -25,11 +25,11 @@ class RoomHoldController extends Controller
      */
     public function index(Request $request): Response
     {
-        $from = rescue(
-            fn () => CarbonImmutable::createFromFormat('Y-m-d', (string) $request->query('from'))->startOfDay(),
-            fn () => CarbonImmutable::today(),
-            report: false,
-        );
+        $date = $request->query('from');
+        $from = is_string($date)
+            ? rescue(fn () => CarbonImmutable::createFromFormat('Y-m-d', $date)?->startOfDay(), report: false)
+            : null;
+        $from ??= CarbonImmutable::today();
         $until = $from->addDays(self::BOARD_DAYS);
 
         $properties = Property::query()

@@ -1,6 +1,18 @@
 <?php
 
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
+
+test('verified users can open the appearance page and discover passkey settings', function () {
+    $this->actingAs(User::factory()->create())
+        ->get(route('appearance.edit'))
+        ->assertInertia(fn (Assert $page) => $page->component('settings/Appearance'));
+
+    $this->getJson(route('well-known.passkeys'))->assertOk()->assertExactJson([
+        'enroll' => route('security.edit'),
+        'manage' => route('security.edit'),
+    ]);
+});
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();

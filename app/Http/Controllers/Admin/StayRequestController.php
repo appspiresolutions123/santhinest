@@ -19,13 +19,14 @@ class StayRequestController extends Controller
      */
     public function index(Request $request): Response
     {
-        $status = StayRequestStatus::tryFrom((string) $request->query('status', 'pending'));
-        $property = $request->query('property');
+        $statusFilter = $request->query('status');
+        $status = is_string($statusFilter) ? StayRequestStatus::tryFrom($statusFilter) : StayRequestStatus::Pending;
+        $property = filter_var($request->query('property'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         $stayRequests = StayRequest::query()
             ->with(['property', 'rooms', 'responder'])
             ->when($status !== null, fn ($query) => $query->where('status', $status))
-            ->when($property !== null, fn ($query) => $query->where('property_id', (int) $property))
+            ->when($property !== false, fn ($query) => $query->where('property_id', $property))
             ->latest('id')
             ->paginate(15)
             ->withQueryString()
