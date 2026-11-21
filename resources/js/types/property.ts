@@ -85,7 +85,8 @@ export type AdminRoom = {
     isActive: boolean;
 };
 
-export type AdminPhoto = PropertyPhoto & {
+export type AdminPhoto = Omit<PropertyPhoto, 'url'> & {
+    url: string | null;
     fileName: string;
 };
 

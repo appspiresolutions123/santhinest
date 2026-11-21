@@ -31,7 +31,8 @@ class PropertyController extends Controller
                 'contactPhone' => $property->contact_phone,
                 'contactEmail' => $property->contact_email,
                 'roomsCount' => $property->rooms_count,
-                'images' => $property->images->take(5)->map(fn (PropertyImage $image): array => $image->toPublicArray())->values()->all(),
+                'images' => $property->images->lazy()->map(fn (PropertyImage $image): array => $image->toPublicArray())
+                    ->whereNotNull('url')->take(5)->values()->all(),
             ]);
 
         return Inertia::render('Welcome', [
@@ -73,7 +74,7 @@ class PropertyController extends Controller
                 'contactPhone' => $property->contact_phone,
                 'contactEmail' => $property->contact_email,
             ],
-            'images' => $property->images->map(fn (PropertyImage $image): array => $image->toPublicArray())->all(),
+            'images' => $property->images->map(fn (PropertyImage $image): array => $image->toPublicArray())->whereNotNull('url')->values()->all(),
             'rooms' => $property->rooms->map(fn (Room $room): array => [
                 'id' => $room->id,
                 'name' => $room->name,
@@ -81,7 +82,7 @@ class PropertyController extends Controller
                 'bedType' => $room->bed_type,
                 'maxGuests' => $room->max_guests,
                 'features' => $room->features ?? [],
-                'images' => $room->images->map(fn (PropertyImage $image): array => $image->toPublicArray())->all(),
+                'images' => $room->images->map(fn (PropertyImage $image): array => $image->toPublicArray())->whereNotNull('url')->values()->all(),
                 'holds' => $room->holds->map(fn (RoomHold $hold): array => [
                     'startsAt' => $hold->starts_at->format('Y-m-d\TH:i'),
                     'endsAt' => $hold->ends_at->format('Y-m-d\TH:i'),

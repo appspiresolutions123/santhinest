@@ -116,8 +116,8 @@ function remove(room: AdminRoom): void {
                         class="grid size-20 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted"
                     >
                         <img
-                            v-if="photoFor(room)"
-                            :src="photoFor(room)!.url"
+                            v-if="photoFor(room)?.url"
+                            :src="photoFor(room)?.url ?? undefined"
                             :alt="room.name"
                             class="size-full object-cover"
                         />

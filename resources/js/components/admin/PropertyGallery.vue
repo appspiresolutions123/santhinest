@@ -159,11 +159,18 @@ function roomValue(event: Event): number | null {
             >
                 <div class="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img
+                        v-if="image.url"
                         :src="image.url"
                         :alt="image.alt"
                         loading="lazy"
                         class="size-full object-cover"
                     />
+                    <p
+                        v-else
+                        class="grid size-full place-items-center text-sm text-muted-foreground"
+                    >
+                        Photo unavailable
+                    </p>
                     <span
                         v-if="index === 0"
                         class="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full bg-honey px-2.5 py-1 text-xs font-medium text-ink"

@@ -27,7 +27,7 @@ use RuntimeException;
  * @property string|null $mime_type
  * @property int $size
  * @property string|null $alt
- * @property-read string $url
+ * @property-read string|null $url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -61,13 +61,18 @@ class Media extends Model
         $optimized = $mimeType === 'image/jpeg' ? self::optimizeJpeg($file, $originalSize) : null;
         $options = ['CacheControl' => 'private, max-age=604800'];
 
-        if ($optimized === null) {
-            $path = $file->store($directory, ['disk' => $disk, ...$options]);
-        } else {
-            $path = $directory.'/'.$file->hashName();
-            if (! Storage::disk($disk)->put($path, $optimized, ['ContentType' => $mimeType, ...$options])) {
-                $path = false;
+        try {
+            if ($optimized === null) {
+                $path = $file->store($directory, ['disk' => $disk, ...$options]);
+            } else {
+                $path = $directory.'/'.$file->hashName();
+                if (! Storage::disk($disk)->put($path, $optimized, ['ContentType' => $mimeType, ...$options])) {
+                    $path = false;
+                }
             }
+        } catch (InvalidArgumentException|RuntimeException $exception) {
+            report($exception);
+            $path = false;
         }
 
         if ($path === false) {
@@ -89,6 +94,10 @@ class Media extends Model
      */
     private static function optimizeJpeg(UploadedFile $file, int $originalSize): ?string
     {
+        if (! function_exists('proc_open')) {
+            return null;
+        }
+
         try {
             $result = Process::timeout(3)->run(['jpegtran', '-copy', 'all', '-optimize', $file->getPathname()]);
         } catch (RuntimeException) {
@@ -129,24 +138,36 @@ class Media extends Model
      * for half its lifetime so repeat visits reuse the same URL and the browser
      * cache keeps working. Local disks get a plain URL.
      *
-     * @return Attribute<string, never>
+     * @return Attribute<string|null, never>
      */
     protected function url(): Attribute
     {
-        return Attribute::get(function (): string {
-            $disk = Storage::disk($this->disk);
+        return Attribute::get(function (): ?string {
+            $driver = config("filesystems.disks.{$this->disk}.driver");
 
-            if (config("filesystems.disks.{$this->disk}.driver") !== 's3') {
-                return $disk->url($this->path);
+            if (blank($driver)) {
+                return null;
             }
 
-            $lifetimeMinutes = (int) config('filesystems.images_url_ttl_minutes');
+            try {
+                $disk = Storage::disk($this->disk);
 
-            return Cache::remember(
-                "media.{$this->id}.signed_url.".md5($this->disk.'|'.$this->path),
-                now()->addMinutes(intdiv($lifetimeMinutes, 2)),
-                fn (): string => $disk->temporaryUrl($this->path, now()->addMinutes($lifetimeMinutes)),
-            );
+                if ($driver !== 's3') {
+                    return $disk->url($this->path);
+                }
+
+                $lifetimeMinutes = (int) config('filesystems.images_url_ttl_minutes');
+
+                return Cache::remember(
+                    "media.{$this->id}.signed_url.".md5($this->disk.'|'.$this->path),
+                    now()->addMinutes(intdiv($lifetimeMinutes, 2)),
+                    fn (): string => $disk->temporaryUrl($this->path, now()->addMinutes($lifetimeMinutes)),
+                );
+            } catch (InvalidArgumentException|RuntimeException $exception) {
+                report($exception);
+
+                return null;
+            }
         });
     }
 

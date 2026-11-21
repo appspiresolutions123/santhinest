@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import PropertyController from '@/actions/App/Http/Controllers/Admin/PropertyController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -14,9 +15,11 @@ const props = defineProps<{
     readonly?: boolean;
 }>();
 
-const route = props.property.slug
-    ? PropertyController.update.form(props.property.slug)
-    : PropertyController.store.form();
+const route = computed(() =>
+    props.property.slug
+        ? PropertyController.update.form(props.property.slug)
+        : PropertyController.store.form(),
+);
 const textareaClass =
     'w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30';
 </script>

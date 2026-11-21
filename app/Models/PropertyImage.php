@@ -72,7 +72,7 @@ class PropertyImage extends Model
     /**
      * The photo as the storefront and admin screens show it.
      *
-     * @return array{id: int, url: string, caption: string|null, alt: string, roomId: int|null}
+     * @return array{id: int, url: string|null, caption: string|null, alt: string, roomId: int|null}
      */
     public function toPublicArray(): array
     {
