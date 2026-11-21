@@ -21,6 +21,9 @@ export type PropertySummary = {
 };
 
 export type PropertyCard = PropertySummary & {
+    address: string | null;
+    contactPhone: string | null;
+    contactEmail: string | null;
     roomsCount: number;
     images: PropertyPhoto[];
 };

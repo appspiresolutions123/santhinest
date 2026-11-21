@@ -27,6 +27,9 @@ class PropertyController extends Controller
             ->get()
             ->map(fn (Property $property): array => [
                 ...self::summary($property),
+                'address' => $property->address,
+                'contactPhone' => $property->contact_phone,
+                'contactEmail' => $property->contact_email,
                 'roomsCount' => $property->rooms_count,
                 'images' => $property->images->take(5)->map(fn (PropertyImage $image): array => $image->toPublicArray())->values()->all(),
             ]);

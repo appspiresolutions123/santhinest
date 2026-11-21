@@ -38,7 +38,7 @@ setLayoutProps({
     ],
 });
 
-const tab = ref<'details' | 'photos' | 'rooms'>('photos');
+const tab = ref<'details' | 'photos' | 'rooms'>('details');
 </script>
 
 <template>
@@ -72,9 +72,9 @@ const tab = ref<'details' | 'photos' | 'rooms'>('photos');
         >
             <button
                 v-for="item in [
+                    { value: 'details', label: 'Details' },
                     { value: 'photos', label: `Photos (${images.length})` },
                     { value: 'rooms', label: `Rooms (${rooms.length})` },
-                    { value: 'details', label: 'Details' },
                 ] as const"
                 :key="item.value"
                 type="button"

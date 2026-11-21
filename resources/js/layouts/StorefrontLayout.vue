@@ -27,7 +27,7 @@ const links = [
     { label: 'Why shanthinest.com', href: '/#highlights' },
     { label: 'Our homes', href: '/#homes' },
     { label: 'How it works', href: '/#how-it-works' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Contact', href: '/#contact' },
 ];
 </script>
 
@@ -124,7 +124,7 @@ const links = [
             <slot />
         </main>
 
-        <footer id="contact" class="relative overflow-hidden bg-ink text-ivory">
+        <footer class="relative overflow-hidden bg-ink text-ivory">
             <div
                 class="sn-grain pointer-events-none absolute inset-0 opacity-[0.07]"
             />
@@ -173,10 +173,12 @@ const links = [
                     >
                         Stay in touch
                     </h3>
-                    <p class="mt-5 text-sm leading-relaxed text-ivory/75">
-                        Questions before you request? Write to us and we usually
-                        reply within a few hours.
-                    </p>
+                    <a
+                        href="/#contact"
+                        class="mt-5 inline-block text-sm text-ivory/75 underline underline-offset-4 transition hover:text-ivory"
+                    >
+                        Contact details and location
+                    </a>
                 </div>
             </div>
             <div

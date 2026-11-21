@@ -177,10 +177,38 @@ const textareaClass =
             </section>
 
             <section class="grid gap-5 rounded-2xl border bg-card p-5 md:p-6">
-                <h2 class="font-medium">Location</h2>
+                <div>
+                    <h2 class="font-medium">Contact &amp; location</h2>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        These contact details and the address appear on the landing page when the
+                        property is published.
+                    </p>
+                </div>
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="grid gap-2">
+                        <Label for="contact_phone">Contact number</Label>
+                        <Input
+                            id="contact_phone"
+                            name="contact_phone"
+                            type="tel"
+                            :default-value="property.contactPhone ?? ''"
+                        />
+                        <InputError :message="errors.contact_phone" />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="contact_email">Contact email</Label>
+                        <Input
+                            id="contact_email"
+                            name="contact_email"
+                            type="email"
+                            :default-value="property.contactEmail ?? ''"
+                        />
+                        <InputError :message="errors.contact_email" />
+                    </div>
+                </div>
                 <div class="grid gap-5 md:grid-cols-3">
                     <div class="grid gap-2 md:col-span-3">
-                        <Label for="address">Area or street</Label>
+                        <Label for="address">Public address or area</Label>
                         <Input
                             id="address"
                             name="address"
@@ -238,7 +266,7 @@ const textareaClass =
                         <InputError :message="errors.longitude" />
                     </div>
                     <p class="self-end pb-2 text-xs text-muted-foreground">
-                        Used for the map. Guests only see the area.
+                        Used for the area map on the property page.
                     </p>
                 </div>
             </section>
@@ -265,7 +293,7 @@ const textareaClass =
             </section>
 
             <section
-                class="grid gap-5 rounded-2xl border bg-card p-5 md:grid-cols-2 md:p-6"
+                class="grid gap-5 rounded-2xl border bg-card p-5 md:p-6"
             >
                 <div class="grid gap-2">
                     <Label for="house_rules">House rules</Label>
@@ -280,27 +308,6 @@ const textareaClass =
                         One rule per line.
                     </p>
                     <InputError :message="errors.house_rules" />
-                </div>
-                <div class="grid content-start gap-5">
-                    <div class="grid gap-2">
-                        <Label for="contact_phone">Contact phone</Label>
-                        <Input
-                            id="contact_phone"
-                            name="contact_phone"
-                            :default-value="property.contactPhone ?? ''"
-                        />
-                        <InputError :message="errors.contact_phone" />
-                    </div>
-                    <div class="grid gap-2">
-                        <Label for="contact_email">Contact email</Label>
-                        <Input
-                            id="contact_email"
-                            name="contact_email"
-                            type="email"
-                            :default-value="property.contactEmail ?? ''"
-                        />
-                        <InputError :message="errors.contact_email" />
-                    </div>
                 </div>
             </section>
         </fieldset>
