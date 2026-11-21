@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
+use League\Flysystem\UnableToDeleteFile;
 use RuntimeException;
 
 /**
@@ -107,7 +109,15 @@ class Media extends Model
      */
     public function deleteWithFile(): void
     {
-        Storage::disk($this->disk)->delete($this->path);
+        try {
+            if (! Storage::disk($this->disk)->delete($this->path)) {
+                throw UnableToDeleteFile::atLocation($this->path, "Disk [{$this->disk}] refused the deletion.");
+            }
+        } catch (InvalidArgumentException|RuntimeException $exception) {
+            report($exception);
+
+            return;
+        }
 
         $this->delete();
     }

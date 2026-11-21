@@ -29,11 +29,13 @@ class PropertyImage extends Model
     protected static function booted(): void
     {
         static::deleted(function (PropertyImage $image): void {
-            $media = $image->media;
+            $image->getConnection()->afterCommit(function () use ($image): void {
+                $media = $image->media()->first();
 
-            if ($media !== null && ! $media->propertyImages()->exists()) {
-                $media->deleteWithFile();
-            }
+                if ($media !== null && ! $media->propertyImages()->exists()) {
+                    $media->deleteWithFile();
+                }
+            });
         });
     }
 
