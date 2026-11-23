@@ -7,9 +7,7 @@ import {
     CalendarHeart,
     DoorOpen,
     HeartHandshake,
-    Mail,
     MapPin,
-    Phone,
     Send,
     Sparkles,
     Users,
@@ -25,14 +23,6 @@ const props = defineProps<{
 
 const featured = computed(() => props.properties[0] ?? null);
 const heroImage = computed(() => featured.value?.images[0] ?? null);
-const contactProperties = computed(() =>
-    props.properties.map((property) => ({
-        ...property,
-        fullAddress: [property.address, property.location]
-            .filter(Boolean)
-            .join(', '),
-    })),
-);
 const photoBand = computed(() =>
     props.properties.flatMap((property) =>
         property.images.map((image) => ({ ...image, property })),
@@ -389,73 +379,6 @@ const steps = [
                         </div>
                     </Link>
                 </div>
-            </div>
-        </section>
-
-        <section
-            id="contact"
-            aria-labelledby="contact-heading"
-            class="scroll-mt-18 border-t border-ink/8 bg-ivory py-18 md:py-24"
-        >
-            <div class="mx-auto max-w-7xl px-5 sm:px-8">
-                <h2 id="contact-heading" class="font-display text-4xl font-light md:text-5xl">
-                    Contact & location
-                </h2>
-                <div v-if="contactProperties.length" class="mt-8 grid gap-5 lg:grid-cols-2">
-                    <article
-                        v-for="property in contactProperties"
-                        :key="property.id"
-                        class="min-w-0 rounded-3xl border border-ink/10 bg-linen/70 p-6 sm:p-8"
-                    >
-                        <h3 class="font-display text-2xl">{{ property.name }}</h3>
-                        <div class="mt-5 grid gap-4 text-sm">
-                            <a
-                                v-if="property.fullAddress"
-                                :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.fullAddress)}`"
-                                class="flex items-start gap-3 underline underline-offset-4 hover:text-clay"
-                            >
-                                <MapPin
-                                    class="mt-0.5 size-4 shrink-0 text-clay"
-                                    aria-hidden="true"
-                                />
-                                <span
-                                    >{{ property.fullAddress }}
-                                    <span class="block text-xs">Open in Google Maps</span></span
-                                >
-                            </a>
-                            <a
-                                v-if="property.contactPhone"
-                                :href="`tel:${property.contactPhone.replace(/[\s().-]/g, '')}`"
-                                class="flex items-start gap-3 underline underline-offset-4 hover:text-clay"
-                            >
-                                <Phone
-                                    class="mt-0.5 size-4 shrink-0 text-clay"
-                                    aria-hidden="true"
-                                />
-                                {{ property.contactPhone }}
-                            </a>
-                            <a
-                                v-if="property.contactEmail"
-                                :href="`mailto:${encodeURIComponent(property.contactEmail).replace(/%40/g, '@')}`"
-                                class="flex items-start gap-3 underline underline-offset-4 hover:text-clay"
-                            >
-                                <Mail class="mt-0.5 size-4 shrink-0 text-clay" aria-hidden="true" />
-                                <span class="wrap-anywhere">{{ property.contactEmail }}</span>
-                            </a>
-                        </div>
-                        <iframe
-                            v-if="property.fullAddress"
-                            :src="`https://www.google.com/maps?q=${encodeURIComponent(property.fullAddress)}&output=embed`"
-                            :title="`Map for ${property.name}`"
-                            class="mt-5 block h-64 w-full rounded-2xl border border-ink/8"
-                            loading="lazy"
-                            allowfullscreen
-                        />
-                    </article>
-                </div>
-                <p v-else class="mt-5 text-sm text-ink-soft">
-                    Contact details will appear when a property is published.
-                </p>
             </div>
         </section>
 

@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ArrowUpRight, Menu, X } from '@lucide/vue';
+import { ArrowUpRight, Mail, MapPin, Menu, Phone, X } from '@lucide/vue';
 import { useWindowScroll } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import logoUrl from '@/assets/brand/santhi-nest-logo.svg';
 import BrandMark from '@/components/storefront/BrandMark.vue';
 import { Toaster } from '@/components/ui/sonner';
 import { dashboard, home, login } from '@/routes';
+import type { PropertyCard, PropertyDetails } from '@/types';
 
-const page = usePage();
+const page = usePage<{
+    properties?: PropertyCard[];
+    property?: PropertyDetails;
+}>();
 const { y } = useWindowScroll();
 
 const isScrolled = computed(() => y.value > 40);
@@ -16,6 +20,15 @@ const isMenuOpen = ref(false);
 const canOpenDashboard = computed(
     () => page.props.auth?.user && page.props.auth.can?.viewDashboard,
 );
+const contactProperties = computed(() => {
+    const { properties, property } = page.props;
+    const homes = property ? [property] : (properties ?? []);
+
+    return homes.map((home) => ({
+        ...home,
+        fullAddress: [home.address, home.location].filter(Boolean).join(', '),
+    }));
+});
 const year = new Date().getFullYear();
 
 watch(
@@ -27,7 +40,7 @@ const links = [
     { label: 'Why shanthinest.com', href: '/#highlights' },
     { label: 'Our homes', href: '/#homes' },
     { label: 'How it works', href: '/#how-it-works' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'Contact', href: '#contact' },
 ];
 </script>
 
@@ -129,7 +142,7 @@ const links = [
                 class="sn-grain pointer-events-none absolute inset-0 opacity-[0.07]"
             />
             <div
-                class="relative mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]"
+                class="relative mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-[1.4fr_1fr]"
             >
                 <div>
                     <div
@@ -167,22 +180,87 @@ const links = [
                         </li>
                     </ul>
                 </div>
-                <div>
-                    <h3
-                        class="text-xs font-medium tracking-[0.2em] text-honey uppercase"
-                    >
-                        Stay in touch
-                    </h3>
-                    <a
-                        href="/#contact"
-                        class="mt-5 inline-block text-sm text-ivory/75 underline underline-offset-4 transition hover:text-ivory"
-                    >
-                        Contact details and location
-                    </a>
-                </div>
             </div>
+            <section
+                id="contact"
+                aria-labelledby="contact-heading"
+                class="relative mx-auto max-w-7xl scroll-mt-18 border-t border-ivory/10 px-5 py-12 sm:px-8"
+            >
+                <h2
+                    id="contact-heading"
+                    class="font-display text-4xl font-light md:text-5xl"
+                >
+                    Contact & location
+                </h2>
+                <div
+                    v-if="contactProperties.length"
+                    class="mt-8 grid gap-5 lg:grid-cols-2"
+                >
+                    <article
+                        v-for="property in contactProperties"
+                        :key="property.id"
+                        class="min-w-0 rounded-3xl border border-ivory/15 bg-ivory/5 p-6 sm:p-8"
+                    >
+                        <h3 class="font-display text-2xl">{{ property.name }}</h3>
+                        <div class="mt-5 grid gap-4 text-sm">
+                            <a
+                                v-if="property.fullAddress"
+                                :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.fullAddress)}`"
+                                class="flex items-start gap-3 underline underline-offset-4 hover:text-honey"
+                            >
+                                <MapPin
+                                    class="mt-0.5 size-4 shrink-0 text-honey"
+                                    aria-hidden="true"
+                                />
+                                <span>
+                                    {{ property.fullAddress }}
+                                    <span class="block text-xs">
+                                        Open in Google Maps
+                                    </span>
+                                </span>
+                            </a>
+                            <a
+                                v-if="property.contactPhone"
+                                :href="`tel:${property.contactPhone.replace(/[\s().-]/g, '')}`"
+                                class="flex items-start gap-3 underline underline-offset-4 hover:text-honey"
+                            >
+                                <Phone
+                                    class="mt-0.5 size-4 shrink-0 text-honey"
+                                    aria-hidden="true"
+                                />
+                                {{ property.contactPhone }}
+                            </a>
+                            <a
+                                v-if="property.contactEmail"
+                                :href="`mailto:${encodeURIComponent(property.contactEmail).replace(/%40/g, '@')}`"
+                                class="flex items-start gap-3 underline underline-offset-4 hover:text-honey"
+                            >
+                                <Mail
+                                    class="mt-0.5 size-4 shrink-0 text-honey"
+                                    aria-hidden="true"
+                                />
+                                <span class="wrap-anywhere">
+                                    {{ property.contactEmail }}
+                                </span>
+                            </a>
+                        </div>
+                        <iframe
+                            v-if="property.fullAddress"
+                            :src="`https://www.google.com/maps?q=${encodeURIComponent(property.fullAddress)}&output=embed`"
+                            :title="`Map for ${property.name}`"
+                            class="mt-5 block h-64 w-full rounded-2xl border border-ivory/10"
+                            loading="lazy"
+                            allowfullscreen
+                        />
+                    </article>
+                </div>
+                <p v-else class="mt-5 text-sm text-ivory/75">
+                    Contact details will appear when a property is published.
+                </p>
+            </section>
             <div
                 class="relative mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-ivory/10 px-5 py-6 text-xs text-ivory/45 sm:px-8"
+                :class="{ 'pb-24 lg:pb-6': page.props.property }"
             >
                 <span>© {{ year }} shanthinest.com. All rights reserved.</span>
                 <Link :href="login()" class="transition hover:text-ivory/80">

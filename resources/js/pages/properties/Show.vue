@@ -88,12 +88,6 @@ const canRequest = computed(
     () => hasDates.value && selectedRoomIds.value.length > 0,
 );
 
-const mapAddress = computed(() =>
-    [props.property.address, props.property.location]
-        .filter(Boolean)
-        .join(', '),
-);
-
 function isNightBlocked(date: string): boolean {
     return isNightFullyHeld(
         props.rooms,
@@ -578,32 +572,6 @@ const stayErrors = computed(() =>
                         </li>
                     </ul>
                 </section>
-
-                <!-- Location -->
-                <section v-if="mapAddress" v-reveal>
-                    <h2 class="font-display text-4xl font-light">
-                        Where you'll be
-                    </h2>
-                    <p
-                        class="mt-2 flex items-center gap-2 text-sm text-ink-soft"
-                    >
-                        <MapPin class="size-4 text-clay" />
-                        {{ mapAddress }}
-                    </p>
-                    <div
-                        class="mt-8 overflow-hidden rounded-[1.75rem] border border-ink/8"
-                    >
-                        <iframe
-                            :src="`https://www.google.com/maps?q=${encodeURIComponent(mapAddress)}&output=embed`"
-                            :title="`Map for ${property.name}`"
-                            class="block h-96 w-full"
-                            loading="lazy"
-                        />
-                    </div>
-                    <p class="mt-3 text-xs text-ink-soft">
-                        The exact address is shared once your stay is confirmed.
-                    </p>
-                </section>
             </div>
 
             <!-- Sticky request card -->
@@ -778,8 +746,6 @@ const stayErrors = computed(() =>
                 </button>
             </div>
         </div>
-        <div class="h-20 lg:hidden" />
-
         <PhotoLightbox v-model="lightboxIndex" :photos="galleryPhotos" />
 
         <!-- Request form -->
