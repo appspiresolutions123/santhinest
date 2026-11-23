@@ -443,6 +443,14 @@ const steps = [
                                 <span class="wrap-anywhere">{{ property.contactEmail }}</span>
                             </a>
                         </div>
+                        <iframe
+                            v-if="property.fullAddress"
+                            :src="`https://www.google.com/maps?q=${encodeURIComponent(property.fullAddress)}&output=embed`"
+                            :title="`Map for ${property.name}`"
+                            class="mt-5 block h-64 w-full rounded-2xl border border-ink/8"
+                            loading="lazy"
+                            allowfullscreen
+                        />
                     </article>
                 </div>
                 <p v-else class="mt-5 text-sm text-ink-soft">

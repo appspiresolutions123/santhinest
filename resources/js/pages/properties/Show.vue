@@ -55,8 +55,20 @@ const selectedRoomIds = ref<number[]>([]);
 const isRequestOpen = ref(false);
 const confirmation = ref<{ reference: string; name: string } | null>(null);
 
-const hero = computed(() => props.images[0] ?? null);
-const mosaic = computed(() => props.images.slice(0, 5));
+const galleryPhotos = computed(() =>
+    props.images.map((photo) => ({
+        ...photo,
+        caption: /^\d+$/.test(photo.caption?.trim() ?? '')
+            ? null
+            : photo.caption,
+        alt: /^\d+$/.test(photo.alt.trim()) ? 'Property photo' : photo.alt,
+    })),
+);
+const hero = computed(() => galleryPhotos.value[0] ?? null);
+const propertyPhoto = computed(() =>
+    galleryPhotos.value.find((photo) => photo.roomId === null) ?? hero.value,
+);
+const mosaic = computed(() => galleryPhotos.value.slice(0, 5));
 const paragraphs = computed(() =>
     (props.property.description ?? '').split(/\n\s*\n/).filter(Boolean),
 );
@@ -76,17 +88,11 @@ const canRequest = computed(
     () => hasDates.value && selectedRoomIds.value.length > 0,
 );
 
-const mapUrl = computed(() => {
-    const { latitude, longitude } = props.property;
-
-    if (latitude === null || longitude === null) {
-        return null;
-    }
-
-    const pad = 0.012;
-
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - pad}%2C${latitude - pad}%2C${longitude + pad}%2C${latitude + pad}&layer=mapnik`;
-});
+const mapAddress = computed(() =>
+    [props.property.address, props.property.location]
+        .filter(Boolean)
+        .join(', '),
+);
 
 function isNightBlocked(date: string): boolean {
     return isNightFullyHeld(
@@ -122,7 +128,7 @@ function toggleRoom(room: StorefrontRoom): void {
 }
 
 function roomPhoto(room: StorefrontRoom): PropertyPhoto | null {
-    return room.images[0] ?? null;
+    return room.images[0] ?? propertyPhoto.value;
 }
 
 function openPhoto(photo: PropertyPhoto): void {
@@ -150,7 +156,7 @@ const form = useForm({
 function startRequest(): void {
     if (!canRequest.value) {
         document
-            .getElementById('availability')
+            .getElementById(hasDates.value ? 'rooms' : 'availability')
             ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         return;
@@ -574,7 +580,7 @@ const stayErrors = computed(() =>
                 </section>
 
                 <!-- Location -->
-                <section v-if="mapUrl" v-reveal>
+                <section v-if="mapAddress" v-reveal>
                     <h2 class="font-display text-4xl font-light">
                         Where you'll be
                     </h2>
@@ -582,37 +588,17 @@ const stayErrors = computed(() =>
                         class="mt-2 flex items-center gap-2 text-sm text-ink-soft"
                     >
                         <MapPin class="size-4 text-clay" />
-                        {{
-                            [property.address, property.location]
-                                .filter(Boolean)
-                                .join(', ')
-                        }}
+                        {{ mapAddress }}
                     </p>
                     <div
-                        class="relative mt-8 overflow-hidden rounded-[1.75rem] border border-ink/8"
+                        class="mt-8 overflow-hidden rounded-[1.75rem] border border-ink/8"
                     >
                         <iframe
-                            :src="mapUrl"
-                            title="Map of the area"
-                            class="h-96 w-full grayscale-[35%] sepia-[15%]"
+                            :src="`https://www.google.com/maps?q=${encodeURIComponent(mapAddress)}&output=embed`"
+                            :title="`Map for ${property.name}`"
+                            class="block h-96 w-full"
                             loading="lazy"
                         />
-                        <div
-                            class="pointer-events-none absolute inset-0 grid place-items-center"
-                        >
-                            <span
-                                class="relative grid size-16 place-items-center"
-                            >
-                                <span
-                                    class="absolute inset-0 animate-ping rounded-full bg-clay/30"
-                                />
-                                <span
-                                    class="grid size-12 place-items-center rounded-full bg-clay text-ivory shadow-xl"
-                                >
-                                    <MapPin class="size-5" />
-                                </span>
-                            </span>
-                        </div>
                     </div>
                     <p class="mt-3 text-xs text-ink-soft">
                         The exact address is shared once your stay is confirmed.
@@ -794,7 +780,7 @@ const stayErrors = computed(() =>
         </div>
         <div class="h-20 lg:hidden" />
 
-        <PhotoLightbox v-model="lightboxIndex" :photos="images" />
+        <PhotoLightbox v-model="lightboxIndex" :photos="galleryPhotos" />
 
         <!-- Request form -->
         <Dialog v-model:open="isRequestOpen">

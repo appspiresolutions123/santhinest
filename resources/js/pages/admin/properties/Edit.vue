@@ -105,6 +105,7 @@ const tab = ref<'details' | 'photos' | 'rooms'>('details');
             :rooms="rooms"
             :images="images"
             :can-manage="can.manageRooms"
+            :can-upload-photos="can.manageImages"
         />
         <PropertyForm
             v-show="tab === 'details'"

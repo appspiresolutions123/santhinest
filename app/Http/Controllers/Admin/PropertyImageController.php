@@ -22,12 +22,14 @@ class PropertyImageController extends Controller
     {
         $nextSortOrder = (int) $property->images()->max('sort_order') + 1;
         $files = $request->file('images', []);
+        $roomId = $request->validated('room_id');
 
         foreach ($files as $offset => $file) {
             $media = Media::storeUpload($file, 'properties/'.$property->slug, alt: $property->name, errorKey: 'images');
 
             $property->images()->create([
                 'media_id' => $media->id,
+                'room_id' => $roomId,
                 'sort_order' => $nextSortOrder + $offset,
             ]);
         }

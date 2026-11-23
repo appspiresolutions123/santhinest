@@ -2,6 +2,7 @@
 
 use App\Models\Media;
 use App\Models\Property;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
@@ -40,6 +41,51 @@ test('admin photo uploads store a smaller lossless JPEG or fall back to the orig
         ->and($media->size)->toBe(strlen($expected))
         ->and($disk->get($media->path))->toBe($expected);
 })->with(['smaller', 'same size', 'unavailable']);
+
+test('admin uploads can attach photos to a room in the property', function () {
+    Storage::fake('public');
+    config(['filesystems.images_disk' => 'public']);
+    Gate::define('manage property images', fn (User $user): bool => true);
+    $room = Room::factory()->create();
+    $upload = UploadedFile::fake()->createWithContent(
+        'room.jpg',
+        file_get_contents(public_path('images/properties/casa-bloom/001.jpg')),
+    );
+    Process::fake();
+
+    $this->actingAs(User::factory()->create())
+        ->post(route('admin.property-images.store', $room->property), [
+            'room_id' => $room->id,
+            'images' => [$upload],
+        ])
+        ->assertSessionHasNoErrors()
+        ->assertRedirect();
+
+    $image = $room->property->images()->sole();
+    expect($image->room_id)->toBe($room->id);
+    Storage::disk('public')->assertExists($image->media->path);
+});
+
+test('admin uploads reject a room from another property', function () {
+    Storage::fake('public');
+    config(['filesystems.images_disk' => 'public']);
+    Gate::define('manage property images', fn (User $user): bool => true);
+    $property = Property::factory()->create();
+    $room = Room::factory()->create();
+    $upload = UploadedFile::fake()->createWithContent(
+        'room.jpg',
+        file_get_contents(public_path('images/properties/casa-bloom/001.jpg')),
+    );
+
+    $this->actingAs(User::factory()->create())
+        ->post(route('admin.property-images.store', $property), [
+            'room_id' => $room->id,
+            'images' => [$upload],
+        ])
+        ->assertSessionHasErrors('room_id');
+
+    $this->assertDatabaseEmpty('property_images');
+});
 
 test('admin deletion completes and reports a failed storage cleanup', function (bool $deleteProperty, bool $storageThrows) {
     Gate::define('manage property images', fn (User $user): bool => true);

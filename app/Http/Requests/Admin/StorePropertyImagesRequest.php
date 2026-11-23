@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Property;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePropertyImagesRequest extends FormRequest
 {
@@ -24,7 +26,11 @@ class StorePropertyImagesRequest extends FormRequest
      */
     public function rules(): array
     {
+        /** @var Property $property */
+        $property = $this->route('property');
+
         return [
+            'room_id' => ['nullable', 'integer', Rule::exists('rooms', 'id')->where('property_id', $property->id)],
             'images' => ['required', 'array', 'max:'.self::MAX_FILES],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:'.self::MAX_KILOBYTES],
         ];

@@ -2,6 +2,7 @@
 import { router, useForm } from '@inertiajs/vue3';
 import { BedDouble, Pencil, Plus, Trash2, Users } from '@lucide/vue';
 import { computed, ref } from 'vue';
+import PropertyImageController from '@/actions/App/Http/Controllers/Admin/PropertyImageController';
 import RoomController from '@/actions/App/Http/Controllers/Admin/RoomController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -23,9 +24,19 @@ const props = defineProps<{
     rooms: AdminRoom[];
     images: AdminPhoto[];
     canManage: boolean;
+    canUploadPhotos: boolean;
 }>();
 
 const editing = ref<AdminRoom | 'new' | null>(null);
+const photoUpload = useForm({
+    room_id: null as number | null,
+    images: [] as File[],
+});
+const propertyPhoto = computed(
+    () =>
+        props.images.find((image) => image.roomId === null && image.url) ??
+        props.images.find((image) => image.url),
+);
 const form = useForm({
     name: '',
     description: '',
@@ -41,7 +52,29 @@ const isOpen = computed({
 });
 
 function photoFor(room: AdminRoom): AdminPhoto | undefined {
-    return props.images.find((image) => image.roomId === room.id);
+    return (
+        props.images.find((image) => image.roomId === room.id && image.url) ??
+        propertyPhoto.value
+    );
+}
+
+function uploadPhotos(room: AdminRoom, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const images = Array.from(input.files ?? []);
+    input.value = '';
+
+    if (images.length === 0 || photoUpload.processing) {
+        return;
+    }
+
+    photoUpload.clearErrors();
+    photoUpload.room_id = room.id;
+    photoUpload.images = images;
+    photoUpload.submit(PropertyImageController.store(props.propertySlug), {
+        forceFormData: true,
+        preserveScroll: true,
+        onFinish: () => photoUpload.reset('images'),
+    });
 }
 
 function open(room: AdminRoom | 'new'): void {
@@ -118,7 +151,7 @@ function remove(room: AdminRoom): void {
                         <img
                             v-if="photoFor(room)?.url"
                             :src="photoFor(room)?.url ?? undefined"
-                            :alt="room.name"
+                            :alt="photoFor(room)?.alt ?? ''"
                             class="size-full object-cover"
                         />
                         <BedDouble
@@ -150,6 +183,46 @@ function remove(room: AdminRoom): void {
                         >
                             {{ room.description }}
                         </p>
+                        <p
+                            v-if="
+                                photoFor(room) &&
+                                photoFor(room)?.roomId !== room.id
+                            "
+                            class="mt-1 text-xs text-muted-foreground"
+                        >
+                            Using a property photo
+                        </p>
+                        <div v-if="canUploadPhotos" class="mt-2 grid gap-1">
+                            <label
+                                :for="`room-photos-${room.id}`"
+                                class="text-xs font-medium"
+                            >
+                                Upload room photos
+                            </label>
+                            <input
+                                :id="`room-photos-${room.id}`"
+                                type="file"
+                                class="w-full min-w-0 rounded-md border border-input px-2 py-1 text-xs file:mr-2 file:font-medium disabled:opacity-50"
+                                multiple
+                                accept="image/jpeg,image/png,image/webp"
+                                :disabled="photoUpload.processing"
+                                @change="uploadPhotos(room, $event)"
+                            />
+                            <template v-if="photoUpload.room_id === room.id">
+                                <p
+                                    v-if="photoUpload.processing"
+                                    role="status"
+                                    class="text-xs text-muted-foreground"
+                                >
+                                    Uploading photos…
+                                </p>
+                                <InputError
+                                    :message="
+                                        Object.values(photoUpload.errors)[0]
+                                    "
+                                />
+                            </template>
+                        </div>
                     </div>
                     <div v-if="canManage" class="flex shrink-0 flex-col gap-1">
                         <Button
