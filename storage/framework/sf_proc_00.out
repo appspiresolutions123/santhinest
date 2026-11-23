@@ -1,3 +1,3 @@
-PHPUnit 13.4.5 by Sebastian Bergmann and contributors.
-
-Cannot open bootstrap script "C:\Users\ADMIN\Herd\santhinest\vendor/autoload.php"
+ M app/Http/Controllers/Admin/PropertyImageController.php
+ M app/Http/Requests/Admin/StorePropertyImagesRequest.php
+ M tests/Feature/PropertyImageControllerTest.php
