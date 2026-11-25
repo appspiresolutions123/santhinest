@@ -20,16 +20,17 @@ class PropertySeeder extends Seeder
     public function run(): void
     {
         $property = Property::query()->firstOrCreate(['slug' => 'casa-bloom'], [
-            'name' => 'Casa Bloom',
+            'name' => 'santhinest',
             'tagline' => 'Bright, cute, cheerful and welcoming',
-            'description' => "Welcome to Casa Bloom, a cute, bright and welcoming home designed for a comfortable stay. Enjoy cosy bedrooms, a modern kitchen and a relaxing living space with warm interiors and natural light.\n\nPerfect for couples, small families or friends, this thoughtfully furnished apartment offers a peaceful retreat to unwind after a busy day. Whether you are visiting for a weekend getaway or a longer stay, Casa Bloom is a lovely place to relax and feel at home.",
+            'description' => "Welcome to santhinest, a cute, bright and welcoming home designed for a comfortable stay. Enjoy cosy bedrooms, a modern kitchen and a relaxing living space with warm interiors and natural light.\n\nPerfect for couples, small families or friends, this thoughtfully furnished apartment offers a peaceful retreat to unwind after a busy day. Whether you are visiting for a weekend getaway or a longer stay, santhinest is a lovely place to relax and feel at home.",
             'property_type' => 'Entire rental unit',
-            'address' => 'Kondapur',
+            'address' => 'Hafeezpet',
             'city' => 'Hyderabad',
             'state' => 'Telangana',
             'country' => 'India',
-            'latitude' => 17.4659300,
-            'longitude' => 78.3668700,
+            'latitude' => 17.4926324,
+            'longitude' => 78.3698192,
+            'contact_phone' => '+919742370900, +919742370700',
             'max_guests' => 4,
             'bedrooms' => 2,
             'beds' => 2,

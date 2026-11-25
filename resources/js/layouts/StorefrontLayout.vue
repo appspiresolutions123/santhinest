@@ -24,10 +24,17 @@ const contactProperties = computed(() => {
     const { properties, property } = page.props;
     const homes = property ? [property] : (properties ?? []);
 
-    return homes.map((home) => ({
-        ...home,
-        fullAddress: [home.address, home.location].filter(Boolean).join(', '),
-    }));
+    return homes.map((home) => {
+        const fullAddress = [home.address, home.location].filter(Boolean).join(', ');
+        const hasCoordinates = home.latitude != null && home.longitude != null;
+
+        return {
+            ...home,
+            fullAddress,
+            mapQuery: hasCoordinates ? `${home.latitude},${home.longitude}` : fullAddress,
+            contactPhones: (home.contactPhone ?? '').split(',').map((phone) => phone.trim()).filter(Boolean),
+        };
+    });
 });
 const year = new Date().getFullYear();
 
@@ -204,8 +211,8 @@ const links = [
                         <h3 class="font-display text-2xl">{{ property.name }}</h3>
                         <div class="mt-5 grid gap-4 text-sm">
                             <a
-                                v-if="property.fullAddress"
-                                :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.fullAddress)}`"
+                                v-if="property.mapQuery"
+                                :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.mapQuery)}`"
                                 class="flex items-start gap-3 underline underline-offset-4 hover:text-honey"
                             >
                                 <MapPin
@@ -213,22 +220,23 @@ const links = [
                                     aria-hidden="true"
                                 />
                                 <span>
-                                    {{ property.fullAddress }}
+                                    {{ property.fullAddress || property.name }}
                                     <span class="block text-xs">
                                         Open in Google Maps
                                     </span>
                                 </span>
                             </a>
                             <a
-                                v-if="property.contactPhone"
-                                :href="`tel:${property.contactPhone.replace(/[\s().-]/g, '')}`"
+                                v-for="phone in property.contactPhones"
+                                :key="phone"
+                                :href="`tel:${phone.replace(/[\s().-]/g, '')}`"
                                 class="flex items-start gap-3 underline underline-offset-4 hover:text-honey"
                             >
                                 <Phone
                                     class="mt-0.5 size-4 shrink-0 text-honey"
                                     aria-hidden="true"
                                 />
-                                {{ property.contactPhone }}
+                                {{ phone }}
                             </a>
                             <a
                                 v-if="property.contactEmail"
@@ -245,8 +253,8 @@ const links = [
                             </a>
                         </div>
                         <iframe
-                            v-if="property.fullAddress"
-                            :src="`https://www.google.com/maps?q=${encodeURIComponent(property.fullAddress)}&output=embed`"
+                            v-if="property.mapQuery"
+                            :src="`https://www.google.com/maps?q=${encodeURIComponent(property.mapQuery)}&output=embed`"
                             :title="`Map for ${property.name}`"
                             class="mt-5 block h-64 w-full rounded-2xl border border-ivory/10"
                             loading="lazy"

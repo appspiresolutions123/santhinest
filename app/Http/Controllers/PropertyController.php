@@ -28,6 +28,8 @@ class PropertyController extends Controller
             ->map(fn (Property $property): array => [
                 ...self::summary($property),
                 'address' => $property->address,
+                'latitude' => $property->latitude === null ? null : (float) $property->latitude,
+                'longitude' => $property->longitude === null ? null : (float) $property->longitude,
                 'contactPhone' => $property->contact_phone,
                 'contactEmail' => $property->contact_email,
                 'roomsCount' => $property->rooms_count,

@@ -1,3 +1,4 @@
- M app/Http/Controllers/Admin/PropertyImageController.php
- M app/Http/Requests/Admin/StorePropertyImagesRequest.php
- M tests/Feature/PropertyImageControllerTest.php
+ M app/Http/Controllers/PropertyController.php
+ M database/seeders/PropertySeeder.php
+ M tests/Feature/PropertyControllerTest.php
+?? database/migrations/2026_11_25_170639_update_santhinest_property_details.php

@@ -42,7 +42,7 @@ const promises = [
     },
     {
         icon: DoorOpen,
-        title: 'A room or the whole home',
+        title: 'A room or the whole apartment',
         text: 'Pick the rooms you need for your dates. Bring the family or come alone.',
     },
 ];
@@ -114,6 +114,13 @@ const steps = [
                         class="sn-rise mt-6 max-w-xl text-base leading-relaxed text-ivory/80 sm:text-lg"
                         style="animation-delay: 450ms"
                     >
+                        Experience the comfort of home with the convenience of a premium stay.<br />
+                        Our spacious 2-bedroom service apartments offer modern amenities, privacy and a relaxing atmosphere.<br />
+                        Ideal for families, business travellers and long stays.<br />
+                        Enjoy comfort, convenience and warm hospitality in the heart of Hafeezpet, Hyderabad.<br />
+                        Shanthi Nest – Your Home Away From Home!
+                    </p>
+                    <p class="mt-4 max-w-xl text-base leading-relaxed text-ivory/80 sm:text-lg">
                         Lamp-lit living rooms, crisp cotton sheets and quiet
                         mornings. Choose your rooms, send a request, and we will
                         keep them ready for you.

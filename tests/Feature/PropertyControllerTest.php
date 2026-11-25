@@ -17,7 +17,9 @@ test('contact details saved in admin appear on the landing page for published pr
             'amenities' => $property->amenities,
             'house_rules' => $property->house_rules,
             'address' => '12 Example Street',
-            'contact_phone' => '+91 98765 43210',
+            'latitude' => 17.4926324,
+            'longitude' => 78.3698192,
+            'contact_phone' => '+919742370900, +919742370700',
             'contact_email' => 'host@example.test',
         ])
         ->assertSessionHasNoErrors()
@@ -28,7 +30,9 @@ test('contact details saved in admin appear on the landing page for published pr
         ->has('properties', 1)
         ->where('properties.0.address', '12 Example Street')
         ->where('properties.0.location', 'Hyderabad, Telangana, India')
-        ->where('properties.0.contactPhone', '+91 98765 43210')
+        ->where('properties.0.latitude', 17.4926324)
+        ->where('properties.0.longitude', 78.3698192)
+        ->where('properties.0.contactPhone', '+919742370900, +919742370700')
         ->where('properties.0.contactEmail', 'host@example.test')
     );
 });

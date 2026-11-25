@@ -22,6 +22,8 @@ export type PropertySummary = {
 
 export type PropertyCard = PropertySummary & {
     address: string | null;
+    latitude: number | null;
+    longitude: number | null;
     contactPhone: string | null;
     contactEmail: string | null;
     roomsCount: number;
