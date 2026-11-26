@@ -31,19 +31,49 @@ const photoBand = computed(() =>
 
 const promises = [
     {
-        icon: Sparkles,
-        title: 'Thoughtfully designed',
-        text: 'Warm light, soft linen and spotless spaces, prepared before every arrival.',
+        icon: BedDouble,
+        title: 'Spacious two-bedroom layouts',
+        text: 'Room for everyone to spread out.',
     },
     {
-        icon: HeartHandshake,
-        title: 'Personally confirmed',
-        text: 'Every request is read by a real host, who confirms your rooms directly.',
+        icon: Sparkles,
+        title: 'Modern amenities',
+        text: 'Everything you need, ready when you arrive.',
     },
     {
         icon: DoorOpen,
-        title: 'A room or the whole apartment',
-        text: 'Pick the rooms you need for your dates. Bring the family or come alone.',
+        title: 'Privacy',
+        text: 'Your own space, on your own terms.',
+    },
+    {
+        icon: CalendarHeart,
+        title: 'Relaxing atmosphere',
+        text: 'A peaceful retreat after a busy day.',
+    },
+    {
+        icon: MapPin,
+        title: 'Prime location',
+        text: 'Close to the city’s best, in the heart of Hyderabad.',
+    },
+    {
+        icon: HeartHandshake,
+        title: 'Warm hospitality',
+        text: 'A team that treats you like family.',
+    },
+];
+
+const guests = [
+    {
+        title: 'Families',
+        text: 'Separate bedrooms, shared living space, and the freedom of a home.',
+    },
+    {
+        title: 'Business travelers',
+        text: 'A quiet, comfortable base to work and rest.',
+    },
+    {
+        title: 'Long stays',
+        text: 'The comfort and flexibility to truly settle in.',
     },
 ];
 
@@ -67,7 +97,7 @@ const steps = [
 </script>
 
 <template>
-    <Head title="Calm stays, personally hosted" />
+    <Head title="Your Home Away From Home in Hyderabad" />
     <div>
         <!-- Hero -->
         <section
@@ -96,56 +126,45 @@ const steps = [
                         style="animation-delay: 150ms"
                     >
                         <MapPin class="size-3.5 text-honey" />
-                        {{
-                            featured
-                                ? `Stays in ${featured.city}`
-                                : 'Stays coming soon'
-                        }}
+                        Hafeezpet, Hyderabad
+                    </p>
+                    <p class="mt-5 text-lg text-ivory/90">
+                        Welcome to Shanthi Nest – Stay Peacefully!
                     </p>
                     <h1
                         class="sn-rise mt-6 font-display text-[clamp(3rem,8vw,6.75rem)] leading-[0.95] font-light tracking-tight text-balance"
                         style="animation-delay: 300ms"
                     >
-                        Come home
-                        <br />
-                        to <em class="font-normal text-honey">calm.</em>
+                        Your Home Away From Home
+                        <em class="font-normal text-honey">in Hyderabad</em>
                     </h1>
                     <p
                         class="sn-rise mt-6 max-w-xl text-base leading-relaxed text-ivory/80 sm:text-lg"
                         style="animation-delay: 450ms"
                     >
-                        Experience the comfort of home with the convenience of a premium stay.<br />
-                        Our spacious 2-bedroom service apartments offer modern amenities, privacy and a relaxing atmosphere.<br />
-                        Ideal for families, business travellers and long stays.<br />
-                        Enjoy comfort, convenience and warm hospitality in the heart of Hafeezpet, Hyderabad.<br />
-                        Shanthi Nest – Your Home Away From Home!
-                    </p>
-                    <p class="mt-4 max-w-xl text-base leading-relaxed text-ivory/80 sm:text-lg">
-                        Lamp-lit living rooms, crisp cotton sheets and quiet
-                        mornings. Choose your rooms, send a request, and we will
-                        keep them ready for you.
+                        Spacious two-bedroom service apartments with the comfort
+                        of home and the convenience of a premium stay.
                     </p>
                     <div
                         class="sn-rise mt-9 flex flex-wrap items-center gap-4"
                         style="animation-delay: 600ms"
                     >
-                        <Link
-                            v-if="featured"
-                            :href="show(featured.slug)"
+                        <a
+                            href="#homes"
                             class="group inline-flex items-center gap-3 rounded-full bg-ivory py-2 pr-2 pl-6 text-sm font-medium text-ink shadow-2xl shadow-black/30 transition hover:bg-white"
                         >
-                            Explore {{ featured.name }}
+                            Book Now
                             <span
                                 class="grid size-9 place-items-center rounded-full bg-clay text-ivory transition-transform duration-300 group-hover:translate-x-0.5"
                             >
                                 <ArrowRight class="size-4" />
                             </span>
-                        </Link>
+                        </a>
                         <a
-                            href="#how-it-works"
+                            href="#contact"
                             class="rounded-full px-5 py-3 text-sm text-ivory/85 transition hover:text-ivory"
                         >
-                            How requests work
+                            Contact Us
                         </a>
                     </div>
                 </div>
@@ -193,23 +212,24 @@ const steps = [
 
         <StayHighlights />
 
-        <!-- Promise -->
         <section id="promise" class="relative bg-ivory">
             <div class="mx-auto max-w-7xl px-5 py-24 sm:px-8 md:py-32">
                 <div class="grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:gap-24">
                     <div v-reveal>
-                        <p
-                            class="text-xs tracking-[0.25em] text-clay uppercase"
-                        >
-                            Our promise
-                        </p>
                         <h2
-                            class="mt-4 font-display text-4xl leading-tight font-light text-balance sm:text-5xl"
+                            class="font-display text-4xl leading-tight font-light sm:text-5xl"
                         >
-                            A quiet nest, kept with
-                            <em class="text-clay">care</em>, for every kind of
-                            stay.
+                            Why Stay With Us
                         </h2>
+                        <p class="mt-6 leading-relaxed text-ink-soft">
+                            Step into a space that feels like your own. Our
+                            two-bedroom service apartments combine modern
+                            amenities, complete privacy, and a calm, relaxing
+                            atmosphere, all in the heart of Hafeezpet, Hyderabad.
+                            Whether you're traveling with family, visiting for
+                            business, or settling in for a long stay, you'll find
+                            comfort, convenience, and warm hospitality at every turn.
+                        </p>
                     </div>
                     <div class="grid gap-8 sm:grid-cols-3 lg:gap-10">
                         <div
@@ -232,6 +252,19 @@ const steps = [
                             </p>
                         </div>
                     </div>
+                </div>
+                <div v-reveal class="mt-16 border-t border-ink/10 pt-10">
+                    <h2 class="font-display text-3xl font-light sm:text-4xl">
+                        Perfect For
+                    </h2>
+                    <ul class="mt-6 grid gap-6 sm:grid-cols-3">
+                        <li v-for="guest in guests" :key="guest.title">
+                            <h3 class="font-display text-xl">{{ guest.title }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-ink-soft">
+                                {{ guest.text }}
+                            </p>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -256,8 +289,8 @@ const steps = [
                         </h2>
                     </div>
                     <p class="max-w-md text-sm leading-relaxed text-ink-soft">
-                        Each home is hand-picked and hosted by us. Open one to
-                        see every room, check your dates and send a request.
+                        Experience a stay that feels like home, only better.
+                        Book your apartment today.
                     </p>
                 </div>
 
